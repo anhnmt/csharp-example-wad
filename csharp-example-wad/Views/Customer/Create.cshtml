@@ -1,0 +1,130 @@
+﻿@{
+    ViewBag.Title = "Create Customer";
+}
+@section styles {
+    <link href="~/Content/dataTables.bootstrap5.min.css" rel="stylesheet" />
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2>Add customer</h2>
+            </div>
+            <div class="card-body">
+                <form id="frmCreate" method="POST">
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="CustomerId" class="col-form-label">Customer Id</label>
+                            <input type="text" class="form-control" id="CustomerId" name="CustomerId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="FullName" class="col-form-label">Full name</label>
+                            <input type="text" class="form-control" id="FullName" name="FullName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Address" class="col-form-label">Address</label>
+                            <input type="text" class="form-control" id="Address" name="Address">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Phone" class="col-form-label">Phone</label>
+                            <input type="text" class="form-control" id="Phone" name="Phone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="TypeId" class="col-form-label">Type Customer</label>
+                            <select id="customerTypes" name="TypeId" class="form-select" aria-label="Default select example">
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="Gender" name="Gender">
+                                <label class="form-check-label" for="Gender">
+                                    Male
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+
+    <script>
+        $(function () {
+            $.ajax({
+                url: '@Url.Action("GetCustomerTypes", "Customer")',
+                type: "GET",
+                success: function (res) {
+                    if (res.statusCode === 200) {
+                        let _html = "";
+
+                        if (res.data) {
+                            for (let item of res.data) {
+                                _html += `<option value="${item.TypeId}">${item.TypeName}</option>`;
+                            }
+                        }
+
+                        $('#customerTypes').append(_html);
+                    }
+                    else {
+                        console.log("GetCustomerTypes: Error");
+                    }
+                }
+            });
+
+            var validator = $("#frmCreate").validate({
+                rules: {
+                    CustomerId: {
+                        required: true,
+                    },
+                    FullName: {
+                        required: true,
+                    },
+                    Address: {
+                        required: true,
+                    },
+                    Phone: {
+                        required: true,
+                    },
+                    TypeId: {
+                        required: true,
+                    },
+                },
+                ignore: [],
+                errorClass: "invalid-feedback",
+                errorElement: "div",
+                errorPlacement: function (e, a) {
+                    jQuery(a).after(e)
+                },
+                highlight: function (e) {
+                    jQuery(e).closest(".form-group").removeClass("is-invalid").addClass("is-invalid")
+                },
+                success: function (e) {
+                    jQuery(e).closest(".form-group").removeClass("is-invalid").addClass("is-valid")
+                },
+                submitHandler: function (form) {
+                    console.log($(form).serialize());
+                    //$.ajax({
+                    //    url: site + '/account/auth/login',
+                    //    type: $(form).attr('method'),
+                    //    data: $(form).serialize(),
+                    //    success: function (res) {
+                    //        if (res === 'TRUE') {
+                    //            window.location = site + '/admin/dashboard';
+                    //        } else {
+                    //            $(".alertFailed").removeClass("invisible");
+                    //            return false;
+                    //        }
+                    //    }
+                    //});
+                }
+            });
+        });
+    </script>
+}

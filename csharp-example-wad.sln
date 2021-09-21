@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csharp-example-wad", "csharp-example-wad\csharp-example-wad.csproj", "{88F49136-03B8-4A50-B25E-CBB10E9F4691}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88F49136-03B8-4A50-B25E-CBB10E9F4691}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88F49136-03B8-4A50-B25E-CBB10E9F4691}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88F49136-03B8-4A50-B25E-CBB10E9F4691}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88F49136-03B8-4A50-B25E-CBB10E9F4691}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CAB72A2D-3172-49FE-B4E9-FB61CC935366}
+	EndGlobalSection
+EndGlobal

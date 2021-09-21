@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "Customer";
+}
+@section styles {
+    <link href="~/Content/dataTables.bootstrap5.min.css" rel="stylesheet" />
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <label for="inputPassword6" class="col-form-label">Type</label>
+                    </div>
+
+                    <div class="col-auto">
+                        <select id="customerTypes" class="form-select" aria-label="Default select example">
+                            <option value="" selected>-- Select customer type --</option>
+                        </select>
+                    </div>
+
+                    <div class="col-auto">
+                        <button id="btnTypeFilter" type="button" class="btn btn-primary mb-3">Submit</button>
+                        <a href="@Url.Action("Create", "Customer")" class="btn btn-info mb-3">New customer</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="datatables" class="table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>FullName</th>
+                                <th>Address</th>
+                                <th>Gender</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(function () {
+            $.ajax({
+                url: '@Url.Action("GetCustomerTypes", "Customer")',
+                type: "GET",
+                success: function (res) {
+                    if (res.statusCode === 200) {
+                        let _html = "";
+
+                        if (res.data) {
+                            for (let item of res.data) {
+                                _html += `<option value="${item.TypeId}">${item.TypeName}</option>`;
+                            }
+                        }
+
+                        $('#customerTypes').append(_html);
+                    }
+                    else {
+                        console.log("GetCustomerTypes: Error");
+                    }
+                }
+            });
+
+            var table = $('#datatables').DataTable({
+                "paging": true,
+                "ordering": true,
+                "autoWidth": false,
+                "responsive": true,
+                "processing": true,
+                "filter": true,
+                "lengthMenu": [5, 10, 20, 50, 100, 200, 500],
+                "ajax": "@Url.Action("GetCustomers", "Customer")",
+                "order": [
+                    [0, 'asc']
+                ],
+                "columns": [
+                    {
+                        data: '',
+                        className: 'align-middle',
+                        "render": function (data, type, row) {
+                            return `<b>#${row.Id}<b>`;
+                        }
+                    },
+                    {
+                        data: 'FullName',
+                        className: 'align-middle',
+                    },
+                    {
+                        data: 'Address',
+                        className: 'align-middle',
+                    },
+                    {
+                        data: '',
+                        className: 'align-middle',
+                        "render": function (data, type, row) {
+                            return `${row.Gender ? "Male" : "Female"}`;
+                        }
+                    },
+                    {
+                        data: 'TypeName',
+                        className: 'align-middle',
+                    },
+                ]
+            });
+
+
+            $("#btnTypeFilter").click(function () {
+                let type = $('#customerTypes').val() ?? "";
+                table.ajax.url("@Url.Action("GetCustomers", "Customer")/?typeId=" + type).load();
+            });
+        });
+    </script>
+}
