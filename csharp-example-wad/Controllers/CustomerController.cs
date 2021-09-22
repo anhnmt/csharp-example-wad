@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using csharp_example_wad.ViewModels;
+using System.Text.RegularExpressions;
 
 namespace csharp_example_wad.Controllers
 {
@@ -69,17 +70,60 @@ namespace csharp_example_wad.Controllers
 
         // POST: Customer/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(Customer customer)
         {
+            var errors = new Dictionary<string, string>();
+
             try
             {
-                // TODO: Add insert logic here
+                if (ModelState.IsValid)
+                {
+                    var check = customerRepository.CheckDuplicate(x => x.Id == customer.Id);
 
-                return RedirectToAction("Index");
+                    if (check)
+                    {
+                        errors.Add("Id", "Customer Id is duplicated!");
+
+                        return Json(new
+                        {
+                            statusCode = 400,
+                            message = "Error",
+                            data = errors
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+
+                    customerRepository.Add(customer);
+
+                    return Json(new
+                    {
+                        statusCode = 200,
+                        message = "Success"
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                foreach (var k in ModelState.Keys)
+                    foreach (var err in ModelState[k].Errors)
+                    {
+                        var key = Regex.Replace(k, @"(\w+)\.(\w+)", @"$2");
+                        if (!errors.ContainsKey(key))
+                            errors.Add(key, err.ErrorMessage);
+                    }
+
+                return Json(new
+                {
+                    statusCode = 400,
+                    message = "Error",
+                    data = errors
+                }, JsonRequestBehavior.AllowGet);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return Json(new
+                {
+                    statusCode = 500,
+                    message = "Error",
+                    data = ex.Message
+                }, JsonRequestBehavior.AllowGet);
             }
         }
     }

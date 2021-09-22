@@ -16,7 +16,7 @@
                     <div class="col-6">
                         <div class="mb-3">
                             <label for="CustomerId" class="col-form-label">Customer Id</label>
-                            <input type="text" class="form-control" id="CustomerId" name="CustomerId">
+                            <input type="text" class="form-control" id="Id" name="Id">
                         </div>
                         <div class="mb-3">
                             <label for="FullName" class="col-form-label">Full name</label>
@@ -37,7 +37,7 @@
                         </div>
                         <div class="mb-3">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="Gender" name="Gender">
+                                <input class="form-check-input" type="checkbox" id="Gender" name="Gender" value="true">
                                 <label class="form-check-label" for="Gender">
                                     Male
                                 </label>
@@ -80,7 +80,7 @@
 
             var validator = $("#frmCreate").validate({
                 rules: {
-                    CustomerId: {
+                    Id: {
                         required: true,
                     },
                     FullName: {
@@ -90,6 +90,7 @@
                         required: true,
                     },
                     Phone: {
+                        number: true,
                         required: true,
                     },
                     TypeId: {
@@ -109,22 +110,51 @@
                     jQuery(e).closest(".form-group").removeClass("is-invalid").addClass("is-valid")
                 },
                 submitHandler: function (form) {
-                    console.log($(form).serialize());
-                    //$.ajax({
-                    //    url: site + '/account/auth/login',
-                    //    type: $(form).attr('method'),
-                    //    data: $(form).serialize(),
-                    //    success: function (res) {
-                    //        if (res === 'TRUE') {
-                    //            window.location = site + '/admin/dashboard';
-                    //        } else {
-                    //            $(".alertFailed").removeClass("invisible");
-                    //            return false;
-                    //        }
-                    //    }
-                    //});
+                    var form = $(form);
+                    console.log(form.serialize());
+
+                    $.ajax({
+                        url: '@Url.Action("Create", "Customer")',
+                        type: form.attr('method'),
+                        data: form.serialize(),
+                        success: function (res) {
+                            if (res.statusCode === 200) {
+                                validator.resetForm();
+                                form.trigger("reset");
+                                notifySuccess('Create Successfully');
+                            }
+                            else if (res.statusCode === 400) {
+                                validator.showErrors(res.data);
+                            }
+                            else {
+                                notifyError(res.data);
+                            }
+                        }
+                    });
                 }
             });
+
+            function notifySuccess(title) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: title,
+                    showConfirmButton: false,
+                    timer: 1500,
+                    toast: true,
+                });
+            }
+
+            function notifyError(title) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: title,
+                    showConfirmButton: false,
+                    timer: 1500,
+                    toast: true,
+                });
+            }
         });
     </script>
 }
