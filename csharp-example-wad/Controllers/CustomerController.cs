@@ -30,13 +30,17 @@ namespace csharp_example_wad.Controllers
         }
 
         // GET: Customer/GetCustomers
-        public ActionResult GetCustomers(int? typeId)
+        [HttpPost]
+        public ActionResult Index(int? typeId)
         {
-            var result = customerRepository.Get();
+            IEnumerable<Customer> result;
 
             if (typeId != null)
             {
-                result = result.Where(x => x.TypeId == typeId);
+                result = customerRepository.Get(x => x.TypeId == typeId);
+            } else
+            {
+                result = customerRepository.Get();
             }
 
             var data = result.Select(x => new CustomerViewModels(x));
@@ -83,6 +87,20 @@ namespace csharp_example_wad.Controllers
                     if (check)
                     {
                         errors.Add("Id", "Customer Id is duplicated!");
+
+                        return Json(new
+                        {
+                            statusCode = 400,
+                            message = "Error",
+                            data = errors
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+
+                    var checkPhone = customerRepository.CheckDuplicate(x => x.Phone == customer.Phone);
+
+                    if (checkPhone)
+                    {
+                        errors.Add("Phone", "Phone is duplicated!");
 
                         return Json(new
                         {
